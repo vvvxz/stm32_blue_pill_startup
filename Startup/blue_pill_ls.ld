@@ -1,6 +1,6 @@
 /*LINKER SCRIPT FOR STM32F103C8T6*/
 /*Firmware's entry point*/
-ENTRY(reset_handler)
+ENTRY(Reset_Handler)
 
 /*Available memory*/
 MEMORY
@@ -17,32 +17,34 @@ _min_heap_size = 0x200;
 _min_stack_size = 0x400;
 
 /*Memory layout*/
-.text :
-{
-  /*Merge .isr_vector_tbl, .text, and .rodata sections*/
-  /*Give each end a global symbol*/
-  . = ALIGN(4); /*Should start at zero, align anyways*/
-  *(.isr_vector_tbl)
-  *(.text)
-  *(.rodata)
-  = ALIGN(4);
-  _etext = .;
-}>FLASH
+SECTIONS {
+  .text :
+  {
+    /*Merge .isr_vector_tbl, .text, and .rodata sections*/
+    /*Give each end a global symbol*/
+    . = ALIGN(4); /*Should start at zero, align anyways*/
+    KEEP(*(.isr_vector_tbl))
+    *(.text)
+    *(.rodata)
+    = ALIGN(4);
+    _etext = .;
+  }>FLASH
 
-.data :
-{
-  . = ALIGN(4);
-  _sdata = .;
-  *(.data)
-  . = ALIGN(4);
-  _edata = .;
-} > SRAM AT> FLASH /*Load VMA from LMA (SRAM from FLASH)*/
+  .data :
+  {
+    . = ALIGN(4);
+    _sdata = .;
+    *(.data)
+    . = ALIGN(4);
+    _edata = .;
+  } > SRAM AT> FLASH /*Load VMA from LMA (SRAM from FLASH)*/
 
-.bss :
-{
-  . = ALIGN(4);
-  _sbss = .;
-  *(.bss)
-  . = ALIGN(4);
-  _ebss = .;
-}> SRAM
+  .bss :
+  {
+    . = ALIGN(4);
+    _sbss = .;
+    *(.bss)
+    . = ALIGN(4);
+    _ebss = .;
+  }> SRAM
+}

@@ -91,6 +91,7 @@ uint32_t vector_tbl[] __attribute__((section(".isr_vector_tbl"))) = {
   (uint32_t)&MemManage_Handler,
   (uint32_t)&BusFault_Handler,
   (uint32_t)&UsageFault_Handler,
+  // Reserved section
   0,
   0,
   0,
