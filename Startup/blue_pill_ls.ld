@@ -13,6 +13,8 @@ MEMORY
 _estack = ORIGIN(SRAM)+LENGTH(SRAM);
 
 /*Heap and stack sizes*/
+_min_heap_size = 0x200;
+_min_stack_size = 0x400;
 
 /*Memory layout*/
 .text :
