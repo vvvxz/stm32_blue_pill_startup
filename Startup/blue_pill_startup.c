@@ -160,7 +160,6 @@ uint32_t vector_tbl[] __attribute__((section(".isr_vector_tbl"))) = {
   (uint32_t)&DMA2_Channel4_5_IRQHandler
 }
 
-// Default handler
 void Default_Handler(void) { 
   while(1) {
     //Infinite looping
@@ -168,19 +167,26 @@ void Default_Handler(void) {
 }
 
 void Reset_Handler(void) {
-  // 
+  // Size of the .data section.
   uint32_t data_mem_size = (uint32_t)&_edata - (uint32_t)&_sdata;
-  //
+  // Size of the .bss section.
   uint32_t bss_mem_size = (uint32_t)&_ebss - (uint32_t)&_sbss; 
-  //
-  uint32_t *p_src_mem = (uint32_t *)&_etext; uint32_t *p_dest_mem = (uint32_t *)&_sdata; 
-  
-  for(uint32_t i = 0; i < data_mem_size; i++ ) { 
+
+  // Start of the .data section in FLASH.
+  uint32_t *p_src_mem = (uint32_t *)&_etext; 
+  // Start of the .data section in SRAM.
+  uint32_t *p_dest_mem = (uint32_t *)&_sdata; 
+
+  // Copy .data in FLASH to .data in SRAM.
+  for(uint32_t i = 0; i < data_mem_size; i++) { 
     *p_dest_mem++ = *p_src_mem++; 
   } 
+
+  // Zero out .bss.
   p_dest_mem = (uint32_t *)&_sbss; 
   for(uint32_t i = 0; i < bss_mem_size; i++) {
     *p_dest_mem++ = 0; 
   } 
+
   main();
 }
