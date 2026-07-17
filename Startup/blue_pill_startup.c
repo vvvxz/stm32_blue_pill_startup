@@ -1,14 +1,16 @@
+#include <stdint.h>
+
 // Variables from the linker script (blue_pill_ls.ld)
-extern uint32_t _estack; 
-extern uint32_t _etext; 
-extern uint32_t _sdata; 
-extern uint32_t _edata; 
-extern uint32_t _sbss; 
+extern uint32_t _estack;
+extern uint32_t _etext;
+extern uint32_t _sdata;
+extern uint32_t _edata;
+extern uint32_t _sbss;
 extern uint32_t _ebss;
 
 // Declare the main function and the function which runs on startup (Reset_Handler)
 int main(void);
-void Reset_Handler(void); 
+void Reset_Handler(void);
 
 // Declare the interrupt handler prototypes
 void NMI_Handler(void)__attribute__((weak, alias("Default_Handler")));
@@ -158,9 +160,9 @@ uint32_t vector_tbl[] __attribute__((section(".isr_vector_tbl"))) = {
   (uint32_t)&DMA2_Channel2_IRQHandler,
   (uint32_t)&DMA2_Channel3_IRQHandler,
   (uint32_t)&DMA2_Channel4_5_IRQHandler
-}
+};
 
-void Default_Handler(void) { 
+void Default_Handler(void) {
   while(1) {
     //Infinite looping
   }
@@ -168,25 +170,25 @@ void Default_Handler(void) {
 
 void Reset_Handler(void) {
   // Size of the .data section.
-  uint32_t data_mem_size = (uint32_t)&_edata - (uint32_t)&_sdata;
+  uint32_t data_size = (uint32_t)&_edata - (uint32_t)&_sdata;
   // Size of the .bss section.
-  uint32_t bss_mem_size = (uint32_t)&_ebss - (uint32_t)&_sbss; 
+  uint32_t bss_size = (uint32_t)&_ebss - (uint32_t)&_sbss;
 
   // Start of the .data section in FLASH.
-  uint32_t *p_src_mem = (uint32_t *)&_etext; 
+  uint32_t* p_src = (uint32_t*)&_etext; // .data starts at the end of .text.
   // Start of the .data section in SRAM.
-  uint32_t *p_dest_mem = (uint32_t *)&_sdata; 
+  uint32_t* p_dest = (uint32_t*)&_sdata;
 
   // Copy .data in FLASH to .data in SRAM.
-  for(uint32_t i = 0; i < data_mem_size; i++) { 
-    *p_dest_mem++ = *p_src_mem++; 
-  } 
+  for(uint32_t i = 0; i < data_size; i++) {
+    *p_dest++ = *p_src++;
+  }
 
   // Zero out .bss.
-  p_dest_mem = (uint32_t *)&_sbss; 
-  for(uint32_t i = 0; i < bss_mem_size; i++) {
-    *p_dest_mem++ = 0; 
-  } 
+  uint32_t* p_bss = (uint32_t*)&_sbss;
+  for(uint32_t i = 0; i < bss_size; i++) {
+    *p_bss++ = 0;
+  }
 
   main();
 }
